@@ -1,0 +1,575 @@
+<meta charset="utf-8">
+<title>Planilha do Casamento</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Layout: uma coluna estreita de passos numerados (a ordem importa), cada passo com o "onde clicar" desenhado ao lado */
+:root{
+  --bg:#F9F7F4; --card:#FFFFFF; --soft:#F1ECE6; --line:#E6DED3;
+  --ink:#24283B; --muted:#62677A; --navy:#1C2B5A; --marsala:#8A3343; --gold:#B8935A;
+  --ok:#2F6B45; --okbg:#E7F2EA; --warnbg:#FBF1E4; --warn:#8A5A1C;
+  --ui:#FFFFFF; --uiline:#DADCE0; --uitext:#3C4043; --uiblue:#1A73E8; --uihi:#E8F0FE;
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Jost",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#13172A; --card:#1B2036; --soft:#23294A; --line:#2F365A; --ink:#ECEAF2; --muted:#A9AEC4;
+  --navy:#B7C4F2; --marsala:#E79AAA; --gold:#D9B98A; --ok:#8FD3A6; --okbg:#1D3A2A; --warnbg:#3A2E1C; --warn:#F0C98A;
+  --ui:#202124; --uiline:#3C4043; --uitext:#E8EAED; --uiblue:#8AB4F8; --uihi:#2A3B5C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13172A; --card:#1B2036; --soft:#23294A; --line:#2F365A; --ink:#ECEAF2; --muted:#A9AEC4;
+  --navy:#B7C4F2; --marsala:#E79AAA; --gold:#D9B98A; --ok:#8FD3A6; --okbg:#1D3A2A; --warnbg:#3A2E1C; --warn:#F0C98A;
+  --ui:#202124; --uiline:#3C4043; --uitext:#E8EAED; --uiblue:#8AB4F8; --uihi:#2A3B5C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:760px;margin:0 auto;display:grid;gap:28px}
+header{text-align:center;display:grid;gap:6px}
+.eyebrow{font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--marsala);font-weight:500}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.1rem,6vw,2.9rem);line-height:1.1;color:var(--navy);margin:0;text-wrap:balance}
+.lead{color:var(--muted);max-width:56ch;margin:4px auto 0}
+.progress{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:10px;font-size:.9rem;color:var(--muted)}
+.bar{width:180px;height:6px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+
+.step{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 24px 20px;display:grid;gap:14px}
+.step.done{border-color:var(--ok)}
+.shead{display:flex;gap:14px;align-items:flex-start}
+.num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--bg);display:grid;place-items:center;font-family:var(--serif);font-size:1.35rem;font-weight:600}
+.step.done .num{background:var(--ok)}
+.shead h2{font-family:var(--serif);font-weight:600;font-size:1.55rem;line-height:1.2;color:var(--navy);margin:4px 0 0;text-wrap:balance}
+.shead .time{font-size:.8rem;color:var(--muted)}
+ol.do{margin:0;padding-left:1.3em;display:grid;gap:8px}
+ol.do li{padding-left:4px}
+b,strong{font-weight:600}
+.k{font-family:var(--sans);font-weight:600;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 7px;white-space:nowrap;color:var(--navy)}
+code{font-family:var(--mono);font-size:.88em;background:var(--soft);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:999px;border:1px solid var(--navy);background:var(--navy);color:var(--bg);font:inherit;font-weight:500;font-size:.95rem;text-decoration:none;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn:focus-visible,.check input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.copied{background:var(--ok);border-color:var(--ok)}
+.note{font-size:.9rem;border-radius:12px;padding:12px 14px;background:var(--soft);color:var(--muted)}
+.note.warn{background:var(--warnbg);color:var(--warn)}
+.note.ok{background:var(--okbg);color:var(--ok)}
+.check{display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px;cursor:pointer;width:100%}
+.check input{width:20px;height:20px;accent-color:var(--ok)}
+details.code summary{cursor:pointer;color:var(--muted);font-size:.9rem}
+details.code textarea{width:100%;height:220px;margin-top:8px;font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px}
+
+/* Desenhos de "onde clicar" (esquemáticos) */
+.shot{border:1px solid var(--uiline);border-radius:12px;background:var(--ui);color:var(--uitext);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:13px;overflow:hidden;max-width:100%}
+.shot-cap{font-size:.78rem;color:var(--muted);margin-top:-6px}
+.menubar{display:flex;flex-wrap:wrap;gap:2px;padding:8px 10px;border-bottom:1px solid var(--uiline)}
+.menubar span{padding:3px 8px;border-radius:4px}
+.menubar .hi{background:var(--uihi);color:var(--uiblue);font-weight:600;outline:2px solid var(--marsala);outline-offset:1px}
+.dropdown{margin:0 0 10px 10px;width:min(240px,90%);border:1px solid var(--uiline);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12);padding:4px 0;background:var(--ui)}
+.dropdown div{padding:6px 14px}
+.dropdown .hi{background:var(--uihi);font-weight:600;outline:2px solid var(--marsala);outline-offset:-2px}
+.dropdown .dim{opacity:.55}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px}
+.tb{border:1px solid var(--uiline);border-radius:4px;padding:4px 9px;white-space:nowrap}
+.tb.hi{outline:2px solid var(--marsala);outline-offset:1px;font-weight:600}
+.tb.blue{background:var(--uiblue);color:var(--ui);border-color:var(--uiblue);font-weight:600}
+.tb.sel::after{content:" ▾";opacity:.7}
+.spacer{flex:1}
+.form{padding:12px 14px;display:grid;gap:8px}
+.frow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center}
+.frow .lbl{color:var(--uitext);opacity:.75}
+.frow .val{border:1px solid var(--uiline);border-radius:4px;padding:4px 8px;min-width:0;overflow-wrap:anywhere}
+.frow .val.hi{outline:2px solid var(--marsala);outline-offset:1px;font-weight:600}
+@media (max-width:480px){.frow{grid-template-columns:1fr;gap:2px}.step{padding:20px 16px}}
+.sheet{display:grid;grid-template-columns:34px 70px minmax(110px,1fr) minmax(170px,2fr);font-size:12px;overflow-x:auto}
+.sheet div{border-right:1px solid var(--uiline);border-bottom:1px solid var(--uiline);padding:5px 7px;min-width:0;overflow-wrap:anywhere}
+.sheet .h{background:var(--soft);font-weight:600;text-align:center}
+.sheet .rn{background:var(--soft);text-align:center;opacity:.7}
+.sheet .fill{background:var(--uihi)}
+.tabs{display:flex;gap:4px;padding:6px 8px;border-top:1px solid var(--uiline);flex-wrap:wrap}
+.tabs span{padding:3px 10px;border-radius:4px;font-size:12px}
+.tabs .on{background:var(--uihi);color:var(--uiblue);font-weight:600}
+.json{font-family:var(--mono);padding:12px;font-size:12px;overflow-wrap:anywhere}
+footer{text-align:center;font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Juliane &amp; Willian · 03.04.2027</p>
+  <h1>Configurar a planilha do casamento</h1>
+  <p class="lead">A planilha do Google guarda as confirmações de presença, os recados e os avisos de presente. São 6 passos, cerca de 20 minutos, feitos uma vez só, de preferência no computador.</p>
+  <div class="progress"><div class="bar"><i id="bar"></i></div><span id="ptxt">0 de 6 feitos</span></div>
+</header>
+
+<!-- 1 -->
+<section class="step" id="s1">
+  <div class="shead"><span class="num">1</span><div><h2>Criar a planilha</h2><span class="time">2 min · precisa de uma conta Gmail</span></div></div>
+  <ol class="do">
+    <li>Toque no botão abaixo. Ele abre uma planilha em branco no Google Planilhas. Se pedir, entre com o seu Gmail.</li>
+    <li>No canto de cima, à esquerda, clique em <span class="k">Planilha sem título</span> e escreva <b>Casamento Juliane e Willian</b>.</li>
+  </ol>
+  <div class="actions"><a class="btn" href="https://sheets.new" target="_blank" rel="noopener">Abrir planilha nova ↗</a></div>
+  <label class="check"><input type="checkbox" data-step="1"> Fiz este passo</label>
+</section>
+
+<!-- 2 -->
+<section class="step" id="s2">
+  <div class="shead"><span class="num">2</span><div><h2>Colar o código</h2><span class="time">3 min</span></div></div>
+  <ol class="do">
+    <li>Na planilha, no menu de cima, clique em <span class="k">Extensões</span> e depois em <span class="k">Apps Script</span>. Abre uma aba nova com um editor de código.</li>
+    <li>Apague tudo o que estiver escrito lá (geralmente <code>function myFunction() { }</code>).</li>
+    <li>Volte para esta página, toque em <b>Copiar o código</b>, vá ao editor e cole (<span class="k">Ctrl</span> + <span class="k">V</span>, ou <span class="k">⌘</span> + <span class="k">V</span> no Mac).</li>
+    <li>Clique no ícone de <b>disquete</b> (Salvar projeto), na barra acima do código.</li>
+  </ol>
+  <div class="shot" role="img" aria-label="Desenho do menu da planilha com Extensões e a opção Apps Script destacadas">
+    <div class="menubar"><span>Arquivo</span><span>Editar</span><span>Ver</span><span>Inserir</span><span>Formatar</span><span>Dados</span><span>Ferramentas</span><span class="hi">Extensões</span><span>Ajuda</span></div>
+    <div class="dropdown"><div class="dim">Complementos</div><div class="dim">Macros</div><div class="hi">Apps Script</div></div>
+  </div>
+  <p class="shot-cap">Onde fica: menu Extensões › Apps Script.</p>
+  <div class="actions">
+    <button class="btn" id="copyBtn" type="button">Copiar o código</button>
+    <span class="note" id="copyMsg" hidden></span>
+  </div>
+  <details class="code"><summary>Ver o código (se o botão de copiar não funcionar, selecione tudo aqui e copie)</summary>
+    <textarea id="codigo" readonly spellcheck="false" aria-label="Código para colar no Apps Script">/* =====================================================================
+   BACKEND GRATUITO DO SITE DE CASAMENTO — Google Apps Script
+   ---------------------------------------------------------------------
+   Guarda RSVP (lista fechada: cada convite já traz o nome de cada pessoa), recados e avisos de presentes
+   numa Planilha do Google. Veja o passo 3 do Guia para instalar.
+
+   1) Cole este código em Extensões &gt; Apps Script da sua planilha.
+   2) Rode a função "configurarPlanilha" uma vez (botão ▶ Executar).
+   3) Implante como "App da Web" (acesso: Qualquer pessoa).
+   ===================================================================== */
+
+const PRAZO_RSVP = new Date('2027-03-03T23:59:59-03:00');
+const LIMITE_POR_PRESENTE = 3;  // depois de informado 3 vezes, o presente some da lista do site
+const MODERAR_RECADOS = false;  // false = o recado aparece na hora no site (true = só depois de marcar "Aprovado")
+const URL_DO_SITE = 'https://julianeewillian.github.io/';  // endereço do site (usado para gerar os links dos convites)
+
+const ABA = {
+  convidados: 'Convidados',
+  respostas: 'Respostas',
+  presentes: 'Presentes',
+  recados: 'Recados',
+  painel: 'Painel'
+};
+
+/* ------------------------------------------------------------------ */
+/*  Rotas                                                              */
+/* ------------------------------------------------------------------ */
+function doGet(e) {
+  const p = (e &amp;&amp; e.parameter) || {};
+  try {
+    if (p.action === 'lookup') return json(buscarConvite_(p.codigo));
+    if (p.action === 'recados') return json(listarRecados_());
+    if (p.action === 'presentes') return json(contarPresentes_());
+    return json({ ok: true, status: 'API do casamento funcionando 💍' });
+  } catch (err) {
+    return json({ ok: false, erro: 'Erro no servidor: ' + err.message });
+  }
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const d = JSON.parse(e.postData.contents || '{}');
+    if (d.tipo === 'rsvp') return json(salvarRsvp_(d));
+    if (d.tipo === 'presente') return json(salvarPresente_(d));
+    if (d.tipo === 'recado') return json(salvarRecado_(d));
+    return json({ ok: false, erro: 'Tipo inválido.' });
+  } catch (err) {
+    return json({ ok: false, erro: 'Erro no servidor: ' + err.message });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  RSVP                                                               */
+/* ------------------------------------------------------------------ */
+function buscarConvite_(codigo) {
+  const cod = normCodigo_(codigo);
+  if (!cod) return { ok: false, erro: 'Digite o código do convite.' };
+  const conv = acharConvidado_(cod);
+  if (!conv) return { ok: false, erro: 'Código não encontrado. Confira o convite e tente de novo.' };
+  return { ok: true, convidado: { codigo: conv.codigo, nome: conv.nome, pessoas: conv.pessoas }, resposta: acharResposta_(cod) };
+}
+
+function salvarRsvp_(d) {
+  if (new Date() &gt; PRAZO_RSVP) return { ok: false, erro: 'O prazo de confirmação terminou.' };
+  const cod = normCodigo_(d.codigo);
+  const conv = acharConvidado_(cod);
+  if (!conv) return { ok: false, erro: 'Convite não encontrado.' };
+
+  // Só vale quem está na lista do convite (lista fechada).
+  // d.vao = [{ nome, crianca }]  — crianca = menor de 8 anos, marcado pelo convidado
+  const pedidos = {};
+  (Array.isArray(d.vao) ? d.vao : []).forEach(x =&gt; {
+    const nome = String(typeof x === 'object' ? x.nome : x).trim().toLowerCase();
+    if (nome) pedidos[nome] = typeof x === 'object' ? !!x.crianca : null;
+  });
+  const vao = d.presenca === 'Sim'
+    ? conv.pessoas.filter(p =&gt; p.nome.toLowerCase() in pedidos)
+        .map(p =&gt; ({ nome: p.nome, crianca: pedidos[p.nome.toLowerCase()] === null ? p.crianca : pedidos[p.nome.toLowerCase()] }))
+    : [];
+  if (d.presenca === 'Sim' &amp;&amp; !vao.length) return { ok: false, erro: 'Marque pelo menos uma pessoa que vai.' };
+  const nomesVao = vao.map(p =&gt; p.nome);
+  const naoVao = conv.pessoas.filter(p =&gt; nomesVao.indexOf(p.nome) &lt; 0);
+  const presenca = vao.length ? 'Sim' : 'Não';
+  const rotulo = p =&gt; p.nome + (p.crianca ? ' (criança até 8 anos)' : '');
+  const linha = [
+    new Date(), conv.codigo, conv.nome, presenca,
+    vao.map(rotulo).join(', '), naoVao.map(rotulo).join(', '),
+    vao.filter(p =&gt; p.crianca).length, vao.filter(p =&gt; !p.crianca).length, vao.length,
+    limpa_(d.telefone, 20), limpa_(d.mensagem, 600),
+    JSON.stringify(vao)
+  ];
+
+  const sh = aba_(ABA.respostas);
+  const row = linhaDaResposta_(sh, conv.codigo);
+  if (row) sh.getRange(row, 1, 1, linha.length).setValues([linha]);
+  else sh.appendRow(linha);
+  return { ok: true };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Presentes e recados                                                */
+/* ------------------------------------------------------------------ */
+function salvarPresente_(d) {
+  // Sempre registra (o convidado já pagou); o limite só esconde o presente do site.
+  aba_(ABA.presentes).appendRow([
+    new Date(), limpa_(d.presente, 100), Number(d.valor) || 0, limpa_(d.forma, 20),
+    limpa_(d.nome, 80), limpa_(d.mensagem, 500), limpa_(d.codigo, 12), false, limpa_(d.id, 30)
+  ]);
+  return { ok: true, contagem: contarPresentes_().contagem, limite: LIMITE_POR_PRESENTE };
+}
+
+/* Quantas vezes cada presente foi informado. Para liberar um presente de novo,
+   apague a linha do aviso na aba Presentes. */
+function contarPresentes_() {
+  const sh = aba_(ABA.presentes), last = sh.getLastRow(), contagem = {};
+  if (last &gt;= 2) {
+    sh.getRange(2, 9, last - 1, 1).getValues().forEach(r =&gt; {
+      const id = String(r[0] || '').trim();
+      if (id) contagem[id] = (contagem[id] || 0) + 1;
+    });
+  }
+  return { ok: true, contagem: contagem, limite: LIMITE_POR_PRESENTE };
+}
+
+function salvarRecado_(d) {
+  const nome = limpa_(d.nome, 80), msg = limpa_(d.mensagem, 600);
+  if (!nome || !msg) return { ok: false, erro: 'Preencha nome e mensagem.' };
+  aba_(ABA.recados).appendRow([new Date(), nome, msg, !MODERAR_RECADOS]);
+  return { ok: true, moderado: MODERAR_RECADOS };
+}
+
+function listarRecados_() {
+  const v = aba_(ABA.recados).getDataRange().getValues().slice(1);
+  const recados = v.filter(r =&gt; r[3] === true &amp;&amp; r[2])
+                   .reverse().slice(0, 200)
+                   .map(r =&gt; ({ nome: String(r[1]), mensagem: String(r[2]) }));
+  return { ok: true, recados };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Auxiliares                                                         */
+/* ------------------------------------------------------------------ */
+/* "Carlos Silva; Ana Silva; Pedro Silva (criança)" → lista de pessoas */
+function lerPessoas_(texto, nomeConvite) {
+  const partes = String(texto || '').split(/[;\n]+/).map(t =&gt; t.trim()).filter(Boolean);
+  const lista = partes.length ? partes : [String(nomeConvite || '').trim()];
+  return lista.map(t =&gt; {
+    const crianca = /\(\s*crian[cç]a\s*\)/i.test(t);
+    return { nome: t.replace(/\(\s*crian[cç]a\s*\)/ig, '').replace(/\s+/g, ' ').trim(), crianca: crianca };
+  }).filter(p =&gt; p.nome);
+}
+
+function acharConvidado_(cod) {
+  const v = aba_(ABA.convidados).getDataRange().getValues();
+  for (let i = 1; i &lt; v.length; i++) {
+    if (normCodigo_(v[i][0]) === cod &amp;&amp; cod) {
+      const nome = String(v[i][1]).trim();
+      return { codigo: cod, nome: nome, pessoas: lerPessoas_(v[i][2], nome) };
+    }
+  }
+  return null;
+}
+
+function acharResposta_(cod) {
+  const sh = aba_(ABA.respostas);
+  const row = linhaDaResposta_(sh, cod);
+  if (!row) return null;
+  const r = sh.getRange(row, 1, 1, 12).getValues()[0];
+  let vao = [];
+  try { vao = JSON.parse(r[11] || '[]'); } catch (e) {}
+  return {
+    data: r[0] instanceof Date ? r[0].toISOString() : '', presenca: r[3], total: r[8],
+    telefone: String(r[9]), mensagem: String(r[10]), vao: vao
+  };
+}
+
+function linhaDaResposta_(sh, cod) {
+  const last = sh.getLastRow();
+  if (last &lt; 2) return 0;
+  const cods = sh.getRange(2, 2, last - 1, 1).getValues();
+  for (let i = 0; i &lt; cods.length; i++) if (normCodigo_(cods[i][0]) === cod) return i + 2;
+  return 0;
+}
+
+function normCodigo_(c) { return String(c || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+
+/* Remove espaços extras, limita tamanho e impede "injeção de fórmulas" */
+function limpa_(s, max) {
+  let t = String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, max || 200);
+  if (/^[=+\-@]/.test(t)) t = "'" + t;
+  return t;
+}
+
+function aba_(nome) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ss.getSheetByName(nome) || ss.insertSheet(nome);
+}
+
+function json(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* =====================================================================
+   MENU "💍 Casamento" NA PLANILHA
+   Depois da primeira configuração, aparece um menu "💍 Casamento" no topo
+   da planilha — não é preciso voltar ao Apps Script para gerar códigos.
+   ===================================================================== */
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('💍 Casamento')
+    .addItem('Gerar códigos e links dos convites', 'gerarCodigos')
+    .addSeparator()
+    .addItem('Configurar planilha (só na primeira vez)', 'configurarPlanilha')
+    .addToUi();
+}
+
+/* =====================================================================
+   FUNÇÕES PARA RODAR MANUALMENTE (menu ▶ Executar)
+   ===================================================================== */
+
+/* Cria as abas, cabeçalhos, exemplos e o painel de resumo. Rode UMA vez. */
+function configurarPlanilha() {
+  const cab = (sh, h, cor) =&gt; {
+    sh.getRange(1, 1, 1, h.length).setValues([h]).setFontWeight('bold').setBackground(cor).setFontColor('#ffffff');
+    sh.setFrozenRows(1);
+  };
+
+  const conv = aba_(ABA.convidados);
+  if (conv.getLastRow() &lt; 1) {
+    cab(conv, ['Código', 'Nome do convite', 'Pessoas do convite (separe com ; e marque (criança))', 'Telefone', 'Link do convite', 'Mensagem pronta para WhatsApp', 'Respondeu?'], '#1C2B5A');
+    conv.getRange(2, 1, 3, 4).setValues([
+      ['', 'Família Silva', 'Carlos Silva; Ana Silva; Pedro Silva (criança)', ''],
+      ['', 'Maria e José', 'Maria Souza; José Souza', ''],
+      ['', 'João Pereira', 'João Pereira', '']
+    ]);
+    conv.getRange('C1').setNote('Escreva o nome de cada pessoa convidada, separados por ponto e vírgula (;).\nOpcional: escreva (criança) depois do nome de quem tem menos de 8 anos; ele já aparece marcado no site, e o convidado pode corrigir.\nEx.: Carlos Silva; Ana Silva; Pedro Silva (criança)');
+    conv.setColumnWidth(2, 220); conv.setColumnWidth(3, 420); conv.setColumnWidth(5, 320); conv.setColumnWidth(6, 360);
+  }
+
+  const resp = aba_(ABA.respostas);
+  if (resp.getLastRow() &lt; 1) {
+    cab(resp, ['Data', 'Código', 'Convite', 'Presença', 'Quem vai', 'Quem não vai', 'Crianças até 8 anos', 'Adultos', 'Total de pessoas', 'WhatsApp', 'Mensagem', '(dados técnicos)'], '#8A3343');
+    resp.hideColumns(12);
+  }
+
+  const pres = aba_(ABA.presentes);
+  if (pres.getLastRow() &lt; 1) {
+    cab(pres, ['Data', 'Presente', 'Valor (R$)', 'Forma', 'Nome do convidado', 'Mensagem', 'Código', 'Conferido no extrato?', '(id do presente)'], '#B8996A');
+    pres.getRange('C:C').setNumberFormat('R$ #,##0.00');
+    pres.getRange('H2:H1000').insertCheckboxes();
+    pres.setColumnWidth(9, 110);
+  }
+
+  const rec = aba_(ABA.recados);
+  if (rec.getLastRow() &lt; 1) {
+    cab(rec, ['Data', 'Nome', 'Mensagem', 'Aprovado'], '#B5838D');
+    rec.getRange('D2:D2000').insertCheckboxes();
+    rec.setColumnWidth(3, 420);
+  }
+
+  const pn = aba_(ABA.painel);
+  pn.clear();
+  pn.getRange('A1').setValue('Painel do casamento 💍').setFontSize(16).setFontWeight('bold');
+  const linhas = [
+    ['Convites cadastrados', '=COUNTA(Convidados!B2:B)'],
+    ['Pessoas convidadas', '=SUMPRODUCT((LEN(TRIM(Convidados!C2:C))&gt;0)*(LEN(Convidados!C2:C)-LEN(SUBSTITUTE(Convidados!C2:C,";",""))+1))'],
+    ['Convites respondidos', '=COUNTA(Respostas!B2:B)'],
+    ['Convites sem resposta', '=B2-B4'],
+    ['✅ Pessoas confirmadas', '=SUMIF(Respostas!D2:D,"Sim",Respostas!I2:I)'],
+    ['   adultos', '=SUMIF(Respostas!D2:D,"Sim",Respostas!H2:H)'],
+    ['   crianças até 8 anos', '=SUMIF(Respostas!D2:D,"Sim",Respostas!G2:G)'],
+    ['⏳ Pessoas ainda sem resposta', '=B3-SUMPRODUCT((LEN(TRIM(Convidados!C2:C))&gt;0)*(Convidados!G2:G&lt;&gt;"⏳ aguardando")*(LEN(Convidados!C2:C)-LEN(SUBSTITUTE(Convidados!C2:C,";",""))+1))'],
+    ['❌ Convites que não irão', '=COUNTIF(Respostas!D2:D,"Não")'],
+    ['🎁 Presentes informados', '=COUNTA(Presentes!B2:B)'],
+    ['🎁 Total informado (R$)', '=SUM(Presentes!C2:C)'],
+    ['💌 Recados aguardando aprovação', '=COUNTIFS(Recados!C2:C,"&lt;&gt;",Recados!D2:D,FALSE)']
+  ];
+  pn.getRange(2, 1, linhas.length, 2).setValues(linhas);
+  pn.getRange('B12').setNumberFormat('R$ #,##0.00');
+  pn.getRange('A2:A13').setFontWeight('bold');
+  pn.setColumnWidth(1, 300);
+
+  gerarCodigos();
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(conv);
+  onOpen();
+  SpreadsheetApp.getActive().toast('Planilha configurada! Agora implante como App da Web.', '💍 Pronto', 8);
+}
+
+/* Preenche códigos aleatórios para quem estiver sem código e
+   gera o link personalizado + mensagem pronta para WhatsApp.
+   Rode sempre que adicionar novos convidados. */
+function gerarCodigos() {
+  const sh = aba_(ABA.convidados);
+  const last = sh.getLastRow();
+  if (last &lt; 2) return;
+  const rng = sh.getRange(2, 1, last - 1, 7);
+  const v = rng.getValues();
+  const usados = new Set(v.map(r =&gt; normCodigo_(r[0])).filter(Boolean));
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sem 0/O e 1/I para não confundir
+  const base = (URL_DO_SITE || 'COLOQUE_A_URL_DO_SITE/').replace(/\/?$/, '/');
+
+  v.forEach((r, i) =&gt; {
+    if (!String(r[1]).trim()) return;
+    if (!normCodigo_(r[0])) {
+      let c; do { c = ''; for (let k = 0; k &lt; 6; k++) c += chars[Math.floor(Math.random() * chars.length)]; } while (usados.has(c));
+      usados.add(c); r[0] = c;
+    }
+    const link = base + '?convite=' + normCodigo_(r[0]) + '#rsvp';
+    r[4] = link;
+    r[5] = 'Olá, ' + String(r[1]).trim() + '! 💍 Juliane e Willian vão se casar em 03/04/2027 e você é nosso convidado especial. ' +
+           'Veja o convite e confirme sua presença até 03/03/2027 neste link: ' + link + '  (seu código: ' + normCodigo_(r[0]) + ')';
+    r[6] = ''; // preenchido pela fórmula abaixo
+  });
+  rng.setValues(v);
+  // Coluna "Respondeu?" com fórmula
+  const f = [];
+  for (let i = 2; i &lt;= last; i++) f.push(['=IF(A' + i + '="","",IFERROR(INDEX(Respostas!D:D,MATCH(A' + i + ',Respostas!B:B,0)),"⏳ aguardando"))']);
+  sh.getRange(2, 7, last - 1, 1).setFormulas(f);
+  SpreadsheetApp.getActive().toast('Códigos, links e mensagens gerados na aba Convidados.', '💍 Pronto', 6);
+}
+</textarea>
+  </details>
+  <label class="check"><input type="checkbox" data-step="2"> Fiz este passo</label>
+</section>
+
+<!-- 3 -->
+<section class="step" id="s3">
+  <div class="shead"><span class="num">3</span><div><h2>Preparar as abas</h2><span class="time">3 min</span></div></div>
+  <ol class="do">
+    <li>Ainda no editor, na barra de cima, ao lado de <span class="k">▶ Executar</span>, há uma lista com o nome de uma função. Escolha <b>configurarPlanilha</b>.</li>
+    <li>Clique em <span class="k">▶ Executar</span>.</li>
+    <li>O Google pede autorização, porque o código é de vocês e não de uma empresa: clique em <span class="k">Revisar permissões</span>, escolha o seu Gmail e, na tela “O Google não verificou este app”, clique em <span class="k">Avançado</span> › <span class="k">Acessar Casamento (não seguro)</span> › <span class="k">Permitir</span>.</li>
+    <li>Volte para a aba da planilha. Devem ter aparecido as abas <b>Convidados, Respostas, Presentes, Recados</b> e <b>Painel</b>, e um menu novo, <b>💍 Casamento</b>, no topo.</li>
+  </ol>
+  <div class="shot" role="img" aria-label="Desenho da barra do Apps Script com a função configurarPlanilha e o botão Executar destacados">
+    <div class="toolbar"><span class="tb">↶</span><span class="tb">↷</span><span class="tb">💾</span><span class="tb hi">▶ Executar</span><span class="tb">Depurar</span><span class="tb sel hi">configurarPlanilha</span><span class="spacer"></span><span class="tb blue sel">Implantar</span></div>
+  </div>
+  <p class="shot-cap">Escolha a função na lista e clique em Executar.</p>
+  <p class="note warn">O aviso “não verificado” é normal: aparece para todo código pessoal no Google. Ele só dá acesso a esta planilha.</p>
+  <label class="check"><input type="checkbox" data-step="3"> Fiz este passo</label>
+</section>
+
+<!-- 4 -->
+<section class="step" id="s4">
+  <div class="shead"><span class="num">4</span><div><h2>Publicar a ligação com o site</h2><span class="time">4 min</span></div></div>
+  <ol class="do">
+    <li>No editor, clique no botão azul <span class="k">Implantar</span> (canto de cima, à direita) › <span class="k">Nova implantação</span>.</li>
+    <li>Ao lado de “Selecionar tipo”, clique na <b>engrenagem ⚙</b> e escolha <span class="k">App da Web</span>.</li>
+    <li>Preencha como no desenho: <b>Executar como: Eu</b> e <b>Quem pode acessar: Qualquer pessoa</b>. Clique em <span class="k">Implantar</span> (se pedir autorização de novo, autorize).</li>
+    <li>Copie o endereço que aparece em <b>URL do app da Web</b>. Ele termina em <code>/exec</code>.</li>
+  </ol>
+  <div class="shot" role="img" aria-label="Desenho da janela Nova implantação com Executar como Eu e Quem pode acessar Qualquer pessoa destacados">
+    <div class="form">
+      <div class="frow"><span class="lbl">Tipo</span><span class="val hi">⚙ App da Web</span></div>
+      <div class="frow"><span class="lbl">Descrição</span><span class="val">Site do casamento</span></div>
+      <div class="frow"><span class="lbl">Executar como</span><span class="val hi">Eu (seu e-mail)</span></div>
+      <div class="frow"><span class="lbl">Quem pode acessar</span><span class="val hi">Qualquer pessoa</span></div>
+      <div class="frow"><span class="lbl">URL do app da Web</span><span class="val">https://script.google.com/macros/s/…/exec</span></div>
+    </div>
+  </div>
+  <p class="shot-cap">Os campos em destaque são os que importam.</p>
+  <p class="note warn">“Quem pode acessar” precisa ser <b>Qualquer pessoa</b>. Com outra opção, os convidados não conseguem confirmar presença.</p>
+  <label class="check"><input type="checkbox" data-step="4"> Fiz este passo</label>
+</section>
+
+<!-- 5 -->
+<section class="step" id="s5">
+  <div class="shead"><span class="num">5</span><div><h2>Colar o endereço no site</h2><span class="time">2 min</span></div></div>
+  <ol class="do">
+    <li>Abra o arquivo <b>config.js</b> do site (no Bloco de Notas, ou no GitHub pelo lápis ✏️ se o site já estiver publicado).</li>
+    <li>Ache a linha <code>apiUrl: "",</code> e cole o endereço entre as aspas, assim:<br><code>apiUrl: "https://script.google.com/macros/s/…/exec",</code></li>
+    <li>Salve. Ao abrir o site, a faixa amarela de “Modo demonstração” some.</li>
+  </ol>
+  <p class="note ok"><b>Teste rápido:</b> cole o endereço <code>/exec</code> na barra do navegador. Se aparecer <code>{"ok":true,"status":"API do casamento funcionando 💍"}</code>, está tudo certo.</p>
+  <label class="check"><input type="checkbox" data-step="5"> Fiz este passo</label>
+</section>
+
+<!-- 6 -->
+<section class="step" id="s6">
+  <div class="shead"><span class="num">6</span><div><h2>Cadastrar os convidados</h2><span class="time">quando quiserem · dá para voltar e acrescentar</span></div></div>
+  <ol class="do">
+    <li>Na planilha, abra a aba <b>Convidados</b> (embaixo) e apague as 3 linhas de exemplo.</li>
+    <li>Uma linha por convite: na coluna <b>B</b>, o nome do convite; na coluna <b>C</b>, o nome de cada pessoa, separados por <b>ponto e vírgula (;)</b>. Deixe a coluna A vazia.</li>
+    <li>No menu <span class="k">💍 Casamento</span> › <span class="k">Gerar códigos e links dos convites</span>. Cada convite ganha um código, um link e uma mensagem pronta para o WhatsApp.</li>
+  </ol>
+  <div class="shot" role="img" aria-label="Desenho da aba Convidados preenchida com dois convites">
+    <div class="sheet">
+      <div class="h"></div><div class="h">A</div><div class="h">B</div><div class="h">C</div>
+      <div class="rn">1</div><div class="h">Código</div><div class="h">Nome do convite</div><div class="h">Pessoas do convite</div>
+      <div class="rn">2</div><div></div><div class="fill">Família Souza</div><div class="fill">Carlos Souza; Ana Souza; Pedro Souza (criança)</div>
+      <div class="rn">3</div><div></div><div class="fill">Tio João</div><div class="fill">João Pereira</div>
+    </div>
+    <div class="tabs"><span class="on">Convidados</span><span>Respostas</span><span>Presentes</span><span>Recados</span><span>Painel</span></div>
+  </div>
+  <p class="shot-cap">“(criança)” é opcional: a pessoa já aparece marcada como menor de 8 anos, e o convidado pode corrigir.</p>
+  <label class="check"><input type="checkbox" data-step="6"> Fiz este passo</label>
+</section>
+
+<section class="step" id="depois">
+  <div class="shead"><span class="num">+</span><div><h2>Depois de publicar o site</h2><span class="time">uma vez, quando tiverem o endereço do site</span></div></div>
+  <ol class="do">
+    <li>No editor do Apps Script, na linha <code>const URL_DO_SITE = '';</code>, coloque o endereço do site entre as aspas e salve (💾).</li>
+    <li>Clique em <span class="k">Implantar</span> › <span class="k">Gerenciar implantações</span> › lápis ✏️ › em Versão, escolha <span class="k">Nova versão</span> › <span class="k">Implantar</span>. O endereço <code>/exec</code> continua o mesmo.</li>
+    <li>Rode de novo <span class="k">💍 Casamento</span> › <span class="k">Gerar códigos e links dos convites</span> para os links dos convites usarem o endereço certo.</li>
+  </ol>
+  <p class="note">Sempre que o código mudar, repitam o item 2: colar o código novo, salvar e criar uma <b>Nova versão</b>.</p>
+</section>
+
+<footer>Os ✓ ficam salvos só neste navegador, para vocês saberem onde pararam.</footer>
+</div>
+
+<script>
+(function(){
+  var KEY="planilha-casamento-passos";
+  var boxes=[].slice.call(document.querySelectorAll('input[data-step]'));
+  var saved={};
+  try{ saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ saved={}; }
+  function render(){
+    var n=0;
+    boxes.forEach(function(b){ var s=b.closest('.step'); s.classList.toggle('done',b.checked); if(b.checked) n++; });
+    document.getElementById('bar').style.width=(n/boxes.length*100)+'%';
+    document.getElementById('ptxt').textContent=n+' de '+boxes.length+' feitos';
+  }
+  boxes.forEach(function(b){
+    b.checked=!!saved[b.dataset.step];
+    b.addEventListener('change',function(){ saved[b.dataset.step]=b.checked; try{ localStorage.setItem(KEY,JSON.stringify(saved)); }catch(e){} render(); });
+  });
+  render();
+  var btn=document.getElementById('copyBtn'), ta=document.getElementById('codigo'), msg=document.getElementById('copyMsg');
+  function ok(t){ btn.classList.add('copied'); btn.textContent='Código copiado ✓'; msg.hidden=false; msg.className='note ok'; msg.textContent=t; setTimeout(function(){ btn.classList.remove('copied'); btn.textContent='Copiar o código'; },3000); }
+  function manual(){ var d=ta.closest('details'); d.open=true; ta.focus(); ta.select(); msg.hidden=false; msg.className='note warn'; msg.textContent='O código está selecionado na caixa abaixo: copie com Ctrl + C (ou ⌘ + C).'; }
+  btn.addEventListener('click',function(){
+    var text=ta.value;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ ok('Agora cole no editor do Apps Script.'); },manual);
+    } else manual();
+  });
+})();
+</script>

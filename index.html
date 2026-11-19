@@ -6,7 +6,7 @@
 <title>Juliane & Willian · 03.04.2027</title>
 <meta name="description" content="Casamento de Juliane e Willian — 03 de abril de 2027, João Monlevade-MG. Confirme sua presença, veja o convite e a lista de presentes.">
 <meta property="og:title" content="Juliane & Willian · 03.04.2027">
-<meta property="og:description" content="Você é nosso convidado! Confirme sua presença até 03/03/2027.">
+<meta property="og:description" content="Você é nosso convidado! Confirme sua presença até 14/03/2027.">
 <meta name="theme-color" content="#1C2B5A">
 <link rel="icon" type="image/png" href="imagens/favicon.png">
 <link rel="apple-touch-icon" href="imagens/monograma.png">
@@ -1084,7 +1084,7 @@ $("#gSend").addEventListener("click",async e=>{
 /* ================= RSVP ================= */
 let rsvpChoice = null;
 function show(step){ ["#rsvpStep1","#rsvpStep2","#rsvpStep3","#rsvpClosed"].forEach(s=>$(s).classList.toggle("hidden",s!==step)); }
-function closed(){ return false; } // o prazo é só um pedido: o RSVP não fecha
+function closed(){ return new Date() > DEADLINE; }
 async function find(code, silent){
   const msg=$("#findMsg"); hideMsg(msg);
   if(!code){ showMsg(msg,"err","Digite o código do convite."); return; }
@@ -1139,7 +1139,7 @@ function openForm(g,resp){
   const prev=$("#prevAnswer");
   if(resp){
     const when = resp.data ? new Date(resp.data).toLocaleDateString("pt-BR") : "";
-    showMsg(prev,"info",`Você já respondeu${when?" em "+when:""}: <b>${esc(resp.presenca)}</b>${resp.presenca==="Sim"?` (${resp.total} pessoa${resp.total>1?"s":""})`:""}. Se mudar algo, é só responder de novo.`);
+    showMsg(prev,"info",`Você já respondeu${when?" em "+when:""}: <b>${esc(resp.presenca)}</b>${resp.presenca==="Sim"?` (${resp.total} pessoa${resp.total>1?"s":""})`:""}. Pode alterar até ${esc(C.prazoRSVPTexto)}.`);
     pick(resp.presenca);
     $("#phone").value=resp.telefone||""; $("#note").value=resp.mensagem||"";
   } else hideMsg(prev);

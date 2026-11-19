@@ -26,8 +26,8 @@ window.CASAMENTO = {
   },
   dataISO: "2027-04-03T17:00:00-03:00",      // data/hora da cerimônia (não mexer no -03:00)
   dataTexto: "Sábado, 03 de abril de 2027",
-  prazoRSVP: "2027-03-03T23:59:59-03:00",    // só um pedido aos convidados: o RSVP continua aberto depois
-  prazoRSVPTexto: "03/03/2027",
+  prazoRSVP: "2027-03-14T23:59:59-03:00",    // depois disso o RSVP fecha sozinho
+  prazoRSVPTexto: "14/03/2027",
   hashtag: "#JulianeEWillian",
   frase: "Com a bênção de Deus e de nossos pais, temos a alegria de convidar você para celebrar o nosso casamento.",
 
@@ -306,7 +306,7 @@ window.CASAMENTO = {
   faq: [
     { p: "Posso levar alguém que não está no convite?", r: "Nosso RSVP é nominal: o número de acompanhantes de cada convite já está definido. Se tiver alguma dúvida, fale com a gente pelo WhatsApp." },
     { p: "Crianças são bem-vindas?", r: "Sim, desde que estejam incluídas no seu convite como acompanhantes." },
-    { p: "Até quando devo confirmar presença?", r: "Pedimos que confirme até 03/03/2027. Depois dessa data o formulário é encerrado." },
+    { p: "Até quando devo confirmar presença?", r: "Pedimos que confirme até 14/03/2027. Depois dessa data o formulário é encerrado." },
     { p: "Posso mudar minha resposta?", r: "Pode! Até o prazo, basta entrar novamente com seu código de convite e enviar uma nova resposta." },
     { p: "É seguro pagar o presente pelo site?", r: "Sim. O Pix é feito pelo aplicativo do seu banco. No cartão, você é levado para a página segura da empresa de pagamentos — o nosso site nunca vê nem guarda os dados do seu cartão." },
     { p: "Posso parcelar o presente no cartão?", r: "Sim, em até 12x. Os juros do parcelamento ficam por conta de quem presenteia; à vista, no crédito ou no Pix, não há acréscimo." },

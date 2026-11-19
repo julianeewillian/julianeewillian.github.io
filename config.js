@@ -17,7 +17,7 @@ window.CASAMENTO = {
   /* ---------- IDENTIDADE VISUAL (artes de vocês, na pasta "imagens") ---------- */
   imagens: {
     monograma: "imagens/monograma.png",          // J&W com flores (fundo transparente)
-    convite: "imagens/convite.jpg",              // convite principal
+    convite: "imagens/convite-2027.jpg",              // convite principal
     conviteIndividual: "imagens/convite-individual.jpg",
     /* Área do QR code dentro do convite principal (em frações da imagem).
        O site cobre essa área com um QR code REAL que leva ao site/RSVP.

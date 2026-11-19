@@ -26,7 +26,7 @@ window.CASAMENTO = {
   },
   dataISO: "2027-04-03T17:00:00-03:00",      // data/hora da cerimônia (não mexer no -03:00)
   dataTexto: "Sábado, 03 de abril de 2027",
-  prazoRSVP: "2027-03-03T23:59:59-03:00",    // depois disso o RSVP fecha sozinho
+  prazoRSVP: "2027-03-03T23:59:59-03:00",    // só um pedido aos convidados: o RSVP continua aberto depois
   prazoRSVPTexto: "03/03/2027",
   hashtag: "#JulianeEWillian",
   frase: "Com a bênção de Deus e de nossos pais, temos a alegria de convidar você para celebrar o nosso casamento.",

@@ -439,10 +439,10 @@ footer .tiny{font-size:.7rem;opacity:.55;margin-top:30px;letter-spacing:.1em}
       </figure>
       <div class="inv-side reveal">
         <h3 class="inv-h">Com muito carinho, convidamos você</h3>
-        <p class="inv-p">Este é o nosso convite. Ele também chega até você impresso e pelo WhatsApp.</p>
+        <p class="inv-p">Este é o nosso convite. Ele também chega até você pelo WhatsApp.</p>
         <div class="inv-tip">
           <span class="inv-tip-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span>
-          <p>Aponte a câmera do celular para o <b>QR code</b> do convite impresso e você abre este site, onde pode confirmar presença e ver a lista de presentes.</p>
+          <p>Aponte a câmera do celular para o <b>QR code</b> do convite e você abre este site, onde pode confirmar presença e ver a lista de presentes.</p>
         </div>
         <div class="btn-row">
           <button class="btn" id="dlInvite">⤓ Baixar convite</button>
@@ -748,7 +748,7 @@ async function loadNotes(){
 
 /* ================= Textos básicos ================= */
 function fillBasics(){
-  if(DEMO) $("#demoBanner").style.display="block";
+  if(DEMO && (location.protocol==="file:" || /^(localhost|127\.|\[::1\])/.test(location.hostname))) $("#demoBanner").style.display="block";
   const d = WEDDING;
   const dd = String(d.getDate()).padStart(2,"0"), mm = String(d.getMonth()+1).padStart(2,"0"), yy = d.getFullYear();
   const dateDots = `${dd} · ${mm} · ${yy}`;
@@ -1084,7 +1084,7 @@ $("#gSend").addEventListener("click",async e=>{
 /* ================= RSVP ================= */
 let rsvpChoice = null;
 function show(step){ ["#rsvpStep1","#rsvpStep2","#rsvpStep3","#rsvpClosed"].forEach(s=>$(s).classList.toggle("hidden",s!==step)); }
-function closed(){ return new Date() > DEADLINE; }
+function closed(){ return false; } // o prazo é só um pedido: o RSVP não fecha
 async function find(code, silent){
   const msg=$("#findMsg"); hideMsg(msg);
   if(!code){ showMsg(msg,"err","Digite o código do convite."); return; }
@@ -1139,7 +1139,7 @@ function openForm(g,resp){
   const prev=$("#prevAnswer");
   if(resp){
     const when = resp.data ? new Date(resp.data).toLocaleDateString("pt-BR") : "";
-    showMsg(prev,"info",`Você já respondeu${when?" em "+when:""}: <b>${esc(resp.presenca)}</b>${resp.presenca==="Sim"?` (${resp.total} pessoa${resp.total>1?"s":""})`:""}. Pode alterar até ${esc(C.prazoRSVPTexto)}.`);
+    showMsg(prev,"info",`Você já respondeu${when?" em "+when:""}: <b>${esc(resp.presenca)}</b>${resp.presenca==="Sim"?` (${resp.total} pessoa${resp.total>1?"s":""})`:""}. Se mudar algo, é só responder de novo.`);
     pick(resp.presenca);
     $("#phone").value=resp.telefone||""; $("#note").value=resp.mensagem||"";
   } else hideMsg(prev);
